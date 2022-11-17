@@ -14,11 +14,10 @@ public class Pass2 {
 	}
 	public static void main(String[] args) {
 		Pass2 pass2=new Pass2();
-		
+
 		try {
 			pass2.generateCode("IC.txt");
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -73,8 +72,8 @@ public class Pass2 {
 						int constant=Integer.parseInt(parts[1].replaceAll("[^0-9]", ""));
 						code="00\t0\t"+String.format("%03d", constant)+"\n";
 						bw.write(code);
-						
-						
+
+
 					}
 				}
 				else if(parts[0].contains("IS"))
@@ -94,7 +93,7 @@ public class Pass2 {
 							code=String.format("%02d", opcode)+"\t0\t"+String.format("%03d", LITTAB.get(symIndex-1).getAddress())+"\n";
 							bw.write(code);
 						}
-						
+
 					}
 				}
 			}
@@ -107,9 +106,9 @@ public class Pass2 {
 			else if(parts[0].contains("IS") && parts.length==3) //All OTHER IS INSTR
 			{
 			int opcode=	Integer.parseInt(parts[0].replaceAll("[^0-9]", ""));
-			
+
 			int regcode=Integer.parseInt(parts[1]);
-			
+
 			if(parts[2].contains("S"))
 			{
 				int symIndex=Integer.parseInt(parts[2].replaceAll("[^0-9]", ""));
@@ -121,9 +120,9 @@ public class Pass2 {
 				int symIndex=Integer.parseInt(parts[2].replaceAll("[^0-9]", ""));
 				code=String.format("%02d", opcode)+"\t"+regcode+"\t"+String.format("%03d", LITTAB.get(symIndex-1).getAddress())+"\n";
 				bw.write(code);
-			}		
 			}
-			
+			}
+
 		}
 		bw.close();
 		br.close();
@@ -132,8 +131,8 @@ public class Pass2 {
 
 
 
-	
-	
-	
-	
+
+
+
+
 }
