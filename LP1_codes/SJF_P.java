@@ -11,7 +11,6 @@ public class SJF_P {
         int ct[] = new int[n]; // ct means complete time
         int ta[] = new int[n];// ta means turn around time
         int wt[] = new int[n]; // wt means waiting time
-        int f[] = new int[n]; // f means it is flag it checks process is completed or not
         int k[] = new int[n]; // it is also stores brust time
         int i, st = 0, tot = 0;
         float avgwt = 0, avgta = 0;
@@ -23,9 +22,7 @@ public class SJF_P {
             System.out.println("enter process " + (i + 1) + " burst time:");
             bt[i] = sc.nextInt();
             k[i] = bt[i];
-            f[i] = 0;
         }
-        sc.close();
 
         while (true) {
             int min = 9999, c = n;
@@ -34,21 +31,19 @@ public class SJF_P {
 
             for (i = 0; i < n; i++) // shorter process
             {
-                if ((at[i] <= st) && (f[i] == 0) && (bt[i] < min)) {
+                if ((at[i] <= st) && (bt[i] < min)) {
                     min = bt[i];
                     c = i;
                 }
             }
-
             if (c == n)
                 st++;
             else {
                 bt[c]--;
                 st++;
-                if (bt[c] == 0) // current proc finish
+                if (bt[c] == 0) // current process finish
                 {
                     ct[c] = st;
-                    f[c] = 1;
                     tot++;
                 }
             }

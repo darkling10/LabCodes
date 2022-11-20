@@ -1,148 +1,71 @@
-
-//JAVA Program for implementing
-//Round Robin Algorithm
-// code by Sparsh_cbs
+import java.io.*;
 import java.util.*;
 
-public class RoundRobin {
-	private static Scanner inp = new Scanner(System.in);
-
-	// Driver Code
-	public static void main(String[] args) {
-		int n, tq, timer = 0, maxProccessIndex = 0;
-		float avgWait = 0, avgTT = 0;
-		System.out.print("\nEnter the time quantam : ");
-		tq = inp.nextInt();
-		System.out.print("\nEnter the number of processess : ");
-		n = inp.nextInt();
-		int arrival[] = new int[n];
-		int burst[] = new int[n];
-		int wait[] = new int[n];
-		int turn[] = new int[n];
-		int queue[] = new int[n];
-		int temp_burst[] = new int[n];
-		boolean complete[] = new boolean[n];
-
-		System.out.print("\nEnter the arrival time of the processess : ");
-		for (int i = 0; i < n; i++)
-			arrival[i] = inp.nextInt();
-
-		System.out.print("\nEnter the burst time of the processess : ");
-		for (int i = 0; i < n; i++) {
-			burst[i] = inp.nextInt();
-			temp_burst[i] = burst[i];
+class round {
+	public static void main(String args[]) throws IOException {
+		Scanner sc = new Scanner(System.in);
+		int i, j, k, q, sum = 0;
+		System.out.println("Enter number of process:");
+		int n = sc.nextInt();
+		int bt[] = new int[n];
+		int wt[] = new int[n];
+		int tat[] = new int[n];
+		int a[] = new int[n];
+		System.out.println("Enter brust Time:");
+		for (i = 0; i < n; i++) {
+			System.out.println("Enter brust Time for " + (i + 1));
+			bt[i] = sc.nextInt();
 		}
+		System.out.println("Enter Time quantum:");
+		q = sc.nextInt();
 
-		for (int i = 0; i < n; i++) { // Initializing the queue and complete array
-			complete[i] = false;// process not completed
-			queue[i] = 0; // preempted processes
-		}
-		// 0
-		while (timer < arrival[0]) // Incrementing Timer until the first process arrives
-			timer++;
-		queue[0] = 1;
+		for (i = 0; i < n; i++)
+			a[i] = bt[i];
 
-		while (true) {
-			boolean flag = true;
-			for (int i = 0; i < n; i++) {
-				if (temp_burst[i] != 0) {
-					flag = false;
-					break;
-				}
-			}
-			if (flag)
-				break;
+		for (i = 0; i < n; i++)
+			wt[i] = 0;
 
-			for (int i = 0; (i < n) && (queue[i] != 0); i++) {
-				int ctr = 0;
-				while ((ctr < tq) && (temp_burst[queue[0] - 1] > 0)) {
-					temp_burst[queue[0] - 1] -= 1;
-					timer += 1;
-					ctr++;
-
-					// Updating the ready queue until all the processes arrive
-					checkNewArrival(timer, arrival, n, maxProccessIndex, queue);
-				}
-				if ((temp_burst[queue[0] - 1] == 0) && (complete[queue[0] - 1] == false)) {
-					turn[queue[0] - 1] = timer; // turn currently stores exit times
-					complete[queue[0] - 1] = true;
-				}
-
-				// checks whether or not CPU is idle
-				boolean idle = true;
-				if (queue[n - 1] == 0) {
-					for (int k = 0; k < n && queue[k] != 0; k++) {
-						if (complete[queue[k] - 1] == false) {
-							idle = false;
-						}
+		do {
+			for (i = 0; i < n; i++) {
+				if (bt[i] > q) {
+					bt[i] -= q;
+					for (j = 0; j < n; j++) {
+						if ((j != i) && (bt[j] != 0))
+							wt[j] += q;
 					}
-				} else
-					idle = false;
-
-				if (idle) {
-					timer++;
-					checkNewArrival(timer, arrival, n, maxProccessIndex, queue);
-				}
-
-				// Maintaining the entries of processes after each premption in the ready Queue
-				queueMaintainence(queue, n);
-			}
-		} // end of while
-
-		for (int i = 0; i < n; i++) {
-			turn[i] = turn[i] - arrival[i];
-			wait[i] = turn[i] - burst[i];
-		}
-
-		System.out.print("\nProgram No.\tArrival Time\tBurst Time\tWait Time\tTurnAround Time"
-				+ "\n");
-		for (int i = 0; i < n; i++) {
-			System.out.print(i + 1 + "\t\t" + arrival[i] + "\t\t" + burst[i]
-					+ "\t\t" + wait[i] + "\t\t" + turn[i] + "\n");
-		}
-		for (int i = 0; i < n; i++) {
-			avgWait += wait[i];
-			avgTT += turn[i];
-		}
-		System.out.print("\nAverage wait time : " + (avgWait / n)
-				+ "\nAverage Turn Around Time : " + (avgTT / n));
-	}
-
-	public static void queueUpdation(int queue[], int timer, int arrival[], int n, int maxProccessIndex) {
-		int zeroIndex = -1;
-		for (int i = 0; i < n; i++) {
-			if (queue[i] == 0) {
-				zeroIndex = i;
-				break;
-			}
-		}
-		if (zeroIndex == -1)
-			return;
-		queue[zeroIndex] = maxProccessIndex + 1;
-	}
-
-	public static void checkNewArrival(int timer, int arrival[], int n, int maxProccessIndex, int queue[]) {
-		if (timer <= arrival[n - 1]) {
-			boolean newArrival = false;
-			for (int j = (maxProccessIndex + 1); j < n; j++) {
-				if (arrival[j] <= timer) { // compare all process arrival time with cur timer
-					if (maxProccessIndex < j) {
-						maxProccessIndex = j;
-						newArrival = true;
+				} else {
+					for (j = 0; j < n; j++) {
+						if ((j != i) && (bt[j] != 0))
+							wt[j] += bt[i];
 					}
+					bt[i] = 0;
 				}
 			}
-			if (newArrival) // adds the index of the arriving process(if any)
-				queueUpdation(queue, timer, arrival, n, maxProccessIndex);
-		}
-	}
+			sum = 0;
+			for (k = 0; k < n; k++)
+				sum = sum + bt[k];
+		} while (sum != 0);
 
-	public static void queueMaintainence(int queue[], int n) {
+		for (i = 0; i < n; i++)
+			tat[i] = wt[i] + a[i];
 
-		for (int i = 0; (i < n - 1) && (queue[i + 1] != 0); i++) {
-			int temp = queue[i];
-			queue[i] = queue[i + 1];
-			queue[i + 1] = temp;
+		System.out.println("process\t\tBT\tWT\tTAT");
+
+		for (i = 0; i < n; i++) {
+			System.out.println("process" + (i + 1) + "\t" + a[i] + "\t" + wt[i] + "\t" + tat[i]);
 		}
+
+		float avg_wt = 0;
+		float avg_tat = 0;
+
+		for (j = 0; j < n; j++) {
+			avg_wt += wt[j];
+		}
+
+		for (j = 0; j < n; j++) {
+			avg_tat += tat[j];
+		}
+
+		System.out.println("average waiting time " + (avg_wt / n) + "\n Average turn around time" + (avg_tat / n));
 	}
 }
