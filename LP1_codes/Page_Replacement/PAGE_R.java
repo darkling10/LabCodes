@@ -3,195 +3,156 @@ package Page_Replacement;
 import java.util.*;
 
 public class PAGE_R {
-    Scanner sc = new Scanner(System.in);
 
-    public void Menu() {
+    static void Menu() {
         System.out.println("1. FIFO");
         System.out.println("2. LRU");
         System.out.println("3. Optimal");
         System.out.println("4. Exit");
     };
 
-    public void accept(int[] ref, int n) {
-
-        System.out.println("\nENTER ELEMENT OF REFERENCE STRING ONE BY ONE::");
-        for (int i = 0; i < n; i++) {
-            ref[i] = sc.nextInt();
+    static int FIFO(int incomingStream[], int len, int frames) {
+        System.out.println("Incoming \tPages");
+        System.out.println("__________________________\n");
+        // Using Hashset to quickly check if a given
+        // incoming stream item in set or not
+        // here HashSet acts as frame into which we've to add pages
+        HashSet<Integer> s = new HashSet<>(frames);
+        // Queue created to store pages in FIFO manner
+        // since set will not store order or entry
+        // we will use queue to note order of entry of incoming page
+        Queue<Integer> queue = new LinkedList<>();
+        int page_faults = 0;
+        for (int i = 0; i < len; i++) {
+            // if set has lesser item than frames
+            if (s.size() < frames) {
+                // If incoming item is not present, add to set
+                if (!s.contains(incomingStream[i])) {
+                    s.add(incomingStream[i]);
+                    page_faults++; // since the page was not already in the frame we've take it as page fault
+                    // Push the incoming page into the queue
+                    queue.add(incomingStream[i]);
+                }
+            }
+            // If the set is full then we need to do page replacement
+            // in FIFO manner that is remove first item from both
+            // set and queue then insert incoming page
+            else {
+                // If incoming item is not present
+                if (!s.contains(incomingStream[i])) {
+                    // remove the first page from the queue
+                    int val = (int) queue.peek(); // this will return head of the queue
+                    // remove from queue
+                    queue.poll();
+                    // Remove from set
+                    s.remove(val);
+                    // insert incoming page to set
+                    s.add(incomingStream[i]);
+                    // push incoming page to queue
+                    queue.add(incomingStream[i]);
+                    page_faults++;
+                }
+            }
+            // printing happens here
+            System.out.print(incomingStream[i] + "\t\t");
+            System.out.print(queue + " \n");
         }
-    };
-
-    public void display(int[] ref, int n) {
-        for (int i = 0; i < n; i++) {
-            System.out.print(" " + ref[i]);
-        }
+        return page_faults;
     }
 
-    public int search(int[] frame, int x, int fs) {
+    static int LRU(int incomingStream[], int frames) {
 
-        for (int i = 0; i < fs; i++) {
-            if (frame[i] == x)
-                return 1;
-        }
-        return 0;
-    }
+        // If the user gives capacity of memory equal to zero, returning 0 since there
+        // aren't going to be any faults
+        if (frames == 0)
+            return 0;
 
-    public void fifo(int[] ref, int n) {
-        int frame[] = new int[10];
-        int k, fs, temp, cnt;
-        System.out.print("\n\nENTER FRAME SIZE::");
-        temp = sc.nextInt();
-        cnt = k = fs = 0;
+        // LinkedHashSet is implemented as a hash table with a linked list running
+        // through it,
+        // so it provides the order of insertion. The time complexity of basic methods
+        // is O(1).
+        // That way the time complexity for adding and removing pages is O(1).
+        LinkedHashSet<Integer> memory = new LinkedHashSet<>(frames);
 
-        for (int i = 0; i < n; i++) {
-            if (search(frame, ref[i], fs) == 0) {
-                frame[k] = ref[i];
-                k = (k + 1) % temp;
-                cnt++;
-                if (cnt < temp)
-                    fs = cnt;
-                else
-                    fs = temp;
-                System.out.format("\n\nFOR PAGE "+ ref[i]);
-                display(frame, fs);
-            } else {
-                System.out.print("\n\nFOR PAGE:: " + ref[i]);
-                System.out.print(" NO PAGE FAULT");
+        int page_faults = 0; // Initializing the page faults
+
+        // Iterating through every page
+        for (int page : incomingStream) {
+            // If this page is in the set, we remove it and adding it at the tail set since
+            // it's implemented
+            // as a linked list to maintain the LRU logic
+            if (memory.contains(page)) {
+                memory.remove(page); // Removes the page
+                memory.add(page); // Adds the new page into the hash set
             }
-        }
-        System.out.println("\n\nTOTAL NO. OF PAGE FAULTS = " + cnt);
-    }
-
-    public void lru(int[] ref, int n) {
-        int frame[] = new int[30];
-        int pos[] = new int[30];
-        int i, j, k, fs, cnt, min;
-
-        System.out.print("\n\nENTER FRAME SIZE::");
-        fs = sc.nextInt();
-        cnt = k = 0;
-
-        for (i = 0; i < fs && i < n; i++) {
-            if (search(frame, ref[i], i) == 0) {
-                frame[k++] = ref[i];
-                cnt++;
-                System.out.print("\n\nFOR PAGE:: " + ref[i]);
-                display(frame, k); // frame size=k
-            } else {
-                System.out.print("\n\nFOR PAGE:: " + ref[i]);
-                System.out.print(" NO PAGE FAULT");
-            }
-        }
-        for (i = 0; i < n; i++) {
-            if (search(frame, ref[i], fs) == 0) {
-                for (j = 0; j < fs; j++) {
-                    for (k = i - 1; k >= 0; k--) {
-                        if (frame[j] == ref[k])
-                            break;
-                    }
-                    pos[j] = k;
+            // Else adding the new page at the tail set since it's implemented as a linked
+            // list to maintain
+            // the LRU logic
+            else {
+                // If it reached its capacity, removing the last recently used page first(first
+                // element of the set) and
+                // then and adding the new page
+                if (memory.size() == frames) {
+                    Iterator<Integer> iterator = memory.iterator(); // Using and iterator just to get the first element
+                                                                    // of the set in O(1)
+                    int firstPageIndex = (int) iterator.next();
+                    memory.remove(firstPageIndex); // Removes he RLU page
                 }
-                k = 0;
-                min = pos[0];
-                for (j = 1; j < fs; j++) {
-                    if (min > pos[j]) {
-                        min = pos[j];
-                        k = j;
-                    }
-                }
-                frame[k] = ref[i];
-                cnt++;
-                System.out.print("\n\nFOR PAGE:: " + ref[i]);
-
-                display(frame, fs);
-            } else {
-                System.out.print("\n\nFOR PAGE  ::\t" + ref[i]);
-                System.out.print(" NO PAGE FAULT");
+                memory.add(page); // Adds the new page into the hash set
+                page_faults++; // Increasing page faults
             }
         }
-        System.out.print("\n\nTOTAL NO. OF PAGE FAULTS = " + cnt);
-    }
+        return page_faults;
 
-    public void optimal(int ref[], int n) {
-        int frame[] = new int[30];
-        int pos[] = new int[30];
-        int i, j, k, fs, cnt, max;
-
-        System.out.print("\n\nENTER FRAME SIZE::");
-        fs = sc.nextInt();
-        cnt = k = 0;
-        for (i = 0; i < fs && i < n; i++) {
-            if (search(frame, ref[i], i) == 0) {
-                frame[k++] = ref[i];
-                cnt++;
-                System.out.print("\n\nFOR PAGE:: " + ref[i]);
-                display(frame, k); // frame size=k
-            } else {
-                System.out.print("\n\nFOR PAGE:: " + ref[i]);
-
-                System.out.print(" NO PAGE FAULT");
-            }
-        }
-        for (; i < n; i++) {
-            if (search(frame, ref[i], fs) == 0) {
-                for (j = 0; j < fs; j++) {
-                    for (k = i + 1; k < n; k++) {
-                        if (frame[j] == ref[k])
-                            break;
-                    }
-                    pos[j] = k;
-                }
-                k = 0;
-                max = pos[0];
-                for (j = 1; j < fs; j++) {
-                    if (max < pos[j]) {
-                        max = pos[j];
-                        k = j;
-                    }
-                }
-                frame[k] = ref[i];
-                cnt++;
-                System.out.print("\n\nFOR PAGE  ::\t" + ref[i]);
-                display(frame, fs);
-            } else {
-                System.out.print("\n\nFOR PAGE  ::\t" + ref[i]);
-                System.out.print(" NO PAGE FAULT");
-            }
-        }
-        System.out.print("\n\nTOTAL NO. OF PAGE FAULTS = " + cnt);
     }
 
     public static void main(String[] args) {
-        PAGE_R obj = new PAGE_R();
-        obj.Menu();
 
-        int ref[] = new int[50];
-        int n, ch = 0;
+        int ch = 0;
+        Scanner sc = new Scanner(System.in);
 
         System.out.print("\n\nENTER SIZE OF REFERENCE STRING::");
-        n = obj.sc.nextInt();
-        obj.accept(ref, n);
+        int len = sc.nextInt();
+        // int frames = 3;
+        System.out.println("Enter the Reference string: ");
+        int incomingStream[] = new int[len];
+        for (int i = 0; i < len; i++) {
+            incomingStream[i] = sc.nextInt();
+        }
+        System.out.println("Enter the number of frames: ");
+        int frames = sc.nextInt();
+
         while (ch != 4) {
-            obj.Menu();
+            Menu();
             System.out.print("\n\nENTER YOUR CHOICE::");
-            ch = obj.sc.nextInt();
+            ch = sc.nextInt();
             switch (ch) {
                 case 1:
-                    System.out.print("\nYOUR ENTERED REFERENCE STRING IS::\n\n");
-                    obj.display(ref, n);
-                    obj.fifo(ref, n);
+                    System.out.println("FIFO");
+                    int pageFaults = FIFO(incomingStream, len, frames);
+                    int hit = len - pageFaults;
+
+                    System.out.println("Page faults: " + pageFaults);
+                    System.out.println("Page fault Ratio: " + (double) pageFaults / len);
+                    System.out.println("Hits: " + hit);
+                    System.out.println("Hit Ratio : " + (double) hit / len);
                     break;
                 case 2:
-                    System.out.print("\nYOUR ENTERED REFERENCE STRING IS::\n\n");
-                    obj.display(ref, n);
-                    obj.lru(ref, n);
+                    System.out.println("LRU");
+                    int page_Faults = LRU(incomingStream, frames);
+                    int hit_LRU = len - page_Faults;
+
+                    System.out.println("Page faults: " + page_Faults);
+                    System.out.println("Page fault Ratio: " + (double) page_Faults / len);
+                    System.out.println("Hits: " + hit_LRU);
+                    System.out.println("Hit Ratio : " + (double) hit_LRU / len);
                     break;
                 case 3:
-                    System.out.print("\nYOUR ENTERED REFERENCE STRING IS::\n\n");
-                    obj.display(ref, n);
-                    obj.optimal(ref, n);
+
                     break;
             }
         }
+        sc.close();
     }
 
 }

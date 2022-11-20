@@ -25,6 +25,7 @@ public class SJF_P {
             k[i] = bt[i];
             f[i] = 0;
         }
+        sc.close();
 
         while (true) {
             int min = 9999, c = n;
@@ -67,6 +68,5 @@ public class SJF_P {
 
         System.out.println("\naverage tat is " + (float) (avgta / n));
         System.out.println("average wt is " + (float) (avgwt / n));
-        sc.close();
     }
 }
