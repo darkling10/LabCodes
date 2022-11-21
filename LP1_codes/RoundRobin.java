@@ -21,6 +21,7 @@ class round {
 
 		for (i = 0; i < n; i++)
 			a[i] = bt[i];
+		// for premptive
 
 		for (i = 0; i < n; i++)
 			wt[i] = 0;
@@ -28,7 +29,7 @@ class round {
 		do {
 			for (i = 0; i < n; i++) {
 				if (bt[i] > q) {
-					bt[i] -= q;
+					bt[i] = bt[i] - q;
 					for (j = 0; j < n; j++) {
 						if ((j != i) && (bt[j] != 0))
 							wt[j] += q;
@@ -42,12 +43,14 @@ class round {
 				}
 			}
 			sum = 0;
-			for (k = 0; k < n; k++)
+			for (k = 0; k < n; k++) {
 				sum = sum + bt[k];
+			}
 		} while (sum != 0);
 
-		for (i = 0; i < n; i++)
+		for (i = 0; i < n; i++) {
 			tat[i] = wt[i] + a[i];
+		}
 
 		System.out.println("process\t\tBT\tWT\tTAT");
 
