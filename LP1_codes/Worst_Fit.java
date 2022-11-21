@@ -2,6 +2,7 @@
 
 public class Worst_Fit {
     // Method to allocate memory to blocks as per Worst fit
+    // whole code is similar to best just select the largest block that's the change
     static void worstFit(int blockSize[], int m, int processSize[],int n) {
         // Stores block id of the block allocated to a process
         int allocation[] = new int[n];
@@ -19,7 +20,7 @@ public class Worst_Fit {
                 if (blockSize[j] >= processSize[i]) {
                     if (wstIdx == -1)
                         wstIdx = j;
-                    else if (blockSize[wstIdx] < blockSize[j])
+                    else if (blockSize[wstIdx] < blockSize[j]) // block should be as large as possible
                         wstIdx = j;
                 }
             }
