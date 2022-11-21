@@ -17,9 +17,9 @@ public class Best_Fit {
             int bestIdx = -1;
             for (int j = 0; j < m; j++) {
                 if (blockSize[j] >= processSize[i]) {
-                    if (bestIdx == -1)
+                    if (bestIdx == -1) // issume the first index is the best index
                         bestIdx = j;
-                    else if (blockSize[bestIdx] > blockSize[j])
+                    else if (blockSize[bestIdx] > blockSize[j]) // also check if any other minimum block is there or not
                         bestIdx = j;
                 }
             }
@@ -34,6 +34,7 @@ public class Best_Fit {
         System.out.println("\nProcess No.\tProcess Size\tBlock no.");
         for (int i = 0; i < n; i++) {
             System.out.print(" " + (i + 1) + "\t\t" + processSize[i] + "\t\t");
+
             if (allocation[i] != -1) {
                 System.out.print(allocation[i] + 1);
             } else {
@@ -42,6 +43,7 @@ public class Best_Fit {
             System.out.println();
         }
     }
+
     public static void main(String[] args) {
         int blockSize[] = { 100, 500, 200, 300, 600 };
         int processSize[] = { 212, 417, 112, 426 };

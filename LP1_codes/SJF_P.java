@@ -23,7 +23,6 @@ public class SJF_P {
             bt[i] = sc.nextInt();
             k[i] = bt[i];
         }
-
         while (true) {
             int min = 9999, c = n;
             if (tot == n)

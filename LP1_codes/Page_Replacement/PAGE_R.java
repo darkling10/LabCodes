@@ -1,5 +1,3 @@
-// package Page_Replacement;
-
 import java.util.*;
 
 public class PAGE_R {
@@ -7,8 +5,7 @@ public class PAGE_R {
     static void Menu() {
         System.out.println("1. FIFO");
         System.out.println("2. LRU");
-        System.out.println("3. Optimal");
-        System.out.println("4. Exit");
+        System.out.println("3. Exit");
     };
 
     static int FIFO(int incomingStream[], int len, int frames) {
@@ -122,7 +119,7 @@ public class PAGE_R {
         System.out.println("Enter the number of frames: ");
         int frames = sc.nextInt();
 
-        while (ch != 4) {
+        while (ch != 3) {
             Menu();
             System.out.print("\n\nENTER YOUR CHOICE::");
             ch = sc.nextInt();
@@ -148,7 +145,6 @@ public class PAGE_R {
                     System.out.println("Hit Ratio : " + (double) hit_LRU / len);
                     break;
                 case 3:
-
                     break;
             }
         }
