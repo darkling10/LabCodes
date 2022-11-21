@@ -19,7 +19,7 @@ public class Best_Fit {
                 if (blockSize[j] >= processSize[i]) {
                     if (bestIdx == -1) // issume the first index is the best index
                         bestIdx = j;
-                    else if (blockSize[bestIdx] > blockSize[j]) // also check if any other minimum block is there or not
+                    else if (blockSize[bestIdx] > blockSize[j]) // also check if any other minimum block is there or not if yes then update the bestIdx
                         bestIdx = j;
                 }
             }
